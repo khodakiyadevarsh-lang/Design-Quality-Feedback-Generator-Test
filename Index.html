@@ -1,0 +1,429 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Aptos:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--p:#7049e2;--pd:#280a80;--pl:#d4c4f6;--pm:#4c28b3;--bg:#f0ebfd;--border:#e2d8f8;--text:#1a0a4a;--muted:#7b6aaa}
+body{font-family:'Aptos',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#280a80 0%,#4c28b3 50%,#7049e2 100%);padding:20px 28px;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.06);border-radius:50%}
+.hdr::after{content:'';position:absolute;bottom:-50px;left:30%;width:140px;height:140px;background:rgba(255,255,255,.04);border-radius:50%}
+.hdr-inner{position:relative;z-index:1;display:flex;align-items:center;gap:12px}
+.hdr-icon{width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid rgba(255,255,255,.2)}
+.hdr h1{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.3px}
+
+/* MAIN LAYOUT */
+.main{display:flex;gap:0;min-height:calc(100vh - 68px)}
+
+/* LEFT SIDEBAR */
+.sidebar{width:270px;min-width:270px;background:#fff;border-right:1px solid var(--border);padding:20px 18px;display:flex;flex-direction:column;gap:16px}
+
+/* UPLOAD in sidebar */
+.upload-zone{border:2px dashed var(--pl);border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--p);background:#ebe4fd}
+.upload-zone i{font-size:26px;color:var(--p);display:block;margin-bottom:8px}
+.uz-t{font-size:13px;font-weight:600;color:var(--text)}
+.uz-s{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* FILTER SECTION */
+.filter-section{display:none;flex-direction:column;gap:12px}
+.filter-title{font-size:11px;font-weight:700;color:var(--pm);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:5px}
+.fg label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.fg select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;font-family:'Aptos',sans-serif;font-size:12px;color:var(--text);background:#fff;cursor:pointer;transition:border-color .15s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%237049e2' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}
+.fg select:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px rgba(112,73,226,.1)}
+.reset-btn{width:100%;padding:8px;border-radius:9px;font-family:'Aptos',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);border:1.5px solid var(--border);transition:all .15s;margin-top:2px}
+.reset-btn:hover{background:var(--bg);color:var(--p);border-color:var(--pl)}
+
+/* STATS in sidebar */
+.stats-section{display:none;flex-direction:column;gap:6px}
+.stat-row{background:var(--bg);border-radius:9px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center}
+.stat-row .lbl{font-size:11px;color:var(--muted);font-weight:500}
+.stat-row .num{font-size:16px;font-weight:700;color:var(--p)}
+.filter-badge{background:var(--pl);color:var(--pd);font-size:10px;font-weight:600;border-radius:8px;padding:4px 8px;margin-top:2px;line-height:1.4;display:none}
+
+/* RIGHT CONTENT */
+.content{flex:1;padding:20px 22px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+
+/* DESIGNER NAV */
+.designer-nav{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 16px;display:none;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(112,73,226,.07)}
+.designer-nav select{flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'Aptos',sans-serif;font-size:13px;color:var(--text);background:#fff;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%237049e2' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.designer-nav select:focus{outline:none;border-color:var(--p)}
+.nav-grp{display:flex;gap:5px;align-items:center}
+.nav-btn{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--p);font-size:17px;font-weight:700;transition:all .15s}
+.nav-btn:hover:not(:disabled){background:var(--bg);border-color:var(--p)}
+.nav-btn:disabled{opacity:.3;cursor:default}
+.nav-lbl{font-size:13px;color:var(--muted);font-weight:600;min-width:46px;text-align:center}
+.copy-btn{background:linear-gradient(135deg,var(--p),var(--pm));color:#fff;padding:8px 16px;border-radius:9px;border:none;font-family:'Aptos',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;box-shadow:0 3px 10px rgba(112,73,226,.3);transition:all .15s;margin-left:auto}
+.copy-btn:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(112,73,226,.42)}
+
+/* EMAIL CARD */
+.email-card{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;display:none;box-shadow:0 4px 18px rgba(112,73,226,.09)}
+.email-card-hdr{background:linear-gradient(135deg,var(--pd),var(--pm));padding:11px 20px;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px}
+.email-body{padding:26px 30px;font-size:14px;line-height:1.8;color:#1a0a4a;font-family:'Aptos',sans-serif}
+.email-body p{margin-bottom:10px}
+.sec-h{font-weight:700;font-size:14px;margin:16px 0 6px;color:#280a80;display:flex;align-items:center;gap:5px}
+.err{color:#ef4444;font-size:12px;padding:5px 0;display:none}
+
+/* Empty state */
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);gap:10px;padding:40px;text-align:center}
+.empty-state i{font-size:48px;opacity:.3}
+.empty-state p{font-size:14px;opacity:.6}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-icon">✉️</div>
+    <h1>Design Quality Feedback Email Generator</h1>
+  </div>
+</div>
+
+<!-- MAIN TWO-COLUMN LAYOUT -->
+<div class="main">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- Upload -->
+    <div class="upload-zone" id="dz" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="onDrop(event)">
+      <i class="ti ti-table-import" aria-hidden="true"></i>
+      <div class="uz-t" id="uz-t">Click to upload Excel file</div>
+      <div class="uz-s">.xlsx or .xls supported</div>
+      <input type="file" id="fi" accept=".xlsx,.xls" style="display:none" onchange="loadFile(this.files[0])">
+    </div>
+
+    <div class="err" id="er"></div>
+
+    <!-- Stats -->
+    <div class="stats-section" id="ss">
+      <div class="stat-row"><span class="lbl">Total Rows</span><span class="num" id="sb-rows">0</span></div>
+      <div class="stat-row"><span class="lbl">Designers</span><span class="num" id="sb-designers">0</span></div>
+      <div class="filter-badge" id="fb"></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section" id="fs">
+      <div class="filter-title">⚡ Filters — instant</div>
+
+      <div class="fg">
+        <label>Designer's Name</label>
+        <select id="fdesigner" onchange="applyFilters()"><option value="">All Designers</option></select>
+      </div>
+      <div class="fg">
+        <label>QA Name</label>
+        <select id="fqa" onchange="applyFilters()"><option value="">All QAs</option></select>
+      </div>
+      <div class="fg">
+        <label>Week Number</label>
+        <select id="fweek" onchange="applyFilters()"><option value="">All Weeks</option></select>
+      </div>
+      <div class="fg">
+        <label>Date From</label>
+        <select id="fdate1" onchange="applyFilters()"><option value="">From — All Dates</option></select>
+      </div>
+      <div class="fg">
+        <label>Date To</label>
+        <select id="fdate2" onchange="applyFilters()"><option value="">To — All Dates</option></select>
+      </div>
+      <button class="reset-btn" onclick="resetFilters()">✕ Reset Filters</button>
+    </div>
+
+  </div><!-- /sidebar -->
+
+  <!-- RIGHT CONTENT -->
+  <div class="content" id="content">
+
+    <!-- Empty state -->
+    <div class="empty-state" id="empty">
+      <i class="ti ti-mail" aria-hidden="true"></i>
+      <p>Upload your Excel file to get started.<br>Filters will appear on the left, emails on the right.</p>
+    </div>
+
+    <!-- Designer Nav -->
+    <div class="designer-nav" id="dn">
+      <select id="ds" onchange="showD(this.value)"><option value="">— Select Designer —</option></select>
+      <div class="nav-grp">
+        <button class="nav-btn" id="pb" onclick="nav(-1)">‹</button>
+        <span class="nav-lbl" id="nl">0 / 0</span>
+        <button class="nav-btn" id="nb2" onclick="nav(1)">›</button>
+      </div>
+      <button class="copy-btn" id="cpb" onclick="copyEmailHTML()">📋 Copy Email</button>
+    </div>
+
+    <!-- Email -->
+    <div class="email-card" id="ec">
+      <div class="email-card-hdr">📧 Email Preview — copy & paste into Outlook / Gmail</div>
+      <div class="email-body" id="pv"></div>
+    </div>
+
+  </div><!-- /content -->
+
+</div><!-- /main -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const RCA_MAP={"orientation changed however not informed to the customer":"Please do not miss to inform the customer about orientation changed.","pms not provided to customer":"Always provide PMS to the customer whenever it is possible to be matched.","recreation not offered":"Offer the recreation to the customer whenever the artwork is possible to be recreated or the order is eligible to move the order to recreation.","recreation not required":"Do not offer the recreation unnecessarily when the recreation is not required/Not possible/Order is not eligible for recreation.","proof not required":"Avoid sharing proofs when they are not required.","proof requested/required but not shared":"Always share the proofs to the customer whenever the customer requests proofs or whenever it is required.","artwork recreated but not informed":"Please inform the customer when the artwork has been recreated/enhanced/vectorised.","alternate product not suggested":"Please suggest the correct product to the customer when they have ordered/required different product based on their requirement.","incorrect/incomplete information shared with the customer about artwork's resolution":"Always share the correct resolution information to the customer, specially in fuzzy artwork/low resolution artworks.","blank space not informed":"Inform the customer about blank space appearing in the design file.","product finishing information not shared":"Always share the product finishing information to the customer without miss.","grommet on artwork not informed":"Please inform the customer about overlapping grommets whenever the artwork is not adjustable.","stitch on artwork not informed":"Please inform the customer about overlapping stitches whenever the artwork is not adjustable.","artwork bit fuzzy not informed":"Inform the customer about fuzziness of the artwork whenever it is required.","low-resolution artwork not informed":"Inform the customer about low resolution of the artwork whenever it is required.","lettering color code not informed":"Always provide lettering color code to the customer.","water mark on artwork not informed":"Please do not miss to inform the customer about watermark appearance in the artwork which is not possible to be removed.","prefer file formats not informed":"Always inform the customer about the preferred file formats whenever required.","7pt font not informed":"Please inform the customer whenever the font size is below the recommended size.","tax exemption not informed":"Always inform the customer about tax exemption eligibility whenever applicable.","line in artwork not informed":"Please inform the customer about lines appearing in the artwork whenever they cannot be removed.","stretched the artwork not informed":"Inform the customer whenever the artwork has been stretched to fit the product dimensions.","item id wise information not shared":"Always share item ID-wise information with the customer.","incorrect product requirement informed":"Always verify and share the correct product requirements with the customer.","artwork adjusted but not informed/incorrectly adjustment informed":"Inform the customer whenever artwork adjustments are made and provide accurate adjustment details.","provided artwork not used and shared incorrect information":"Always use the artwork provided by the customer and share accurate information.","quantity not confirmed with the customer":"Please confirm the required quantity with the customer whenever clarification is needed.","postscript not informed":"Always inform the customer about any required postscript information.","not acknowledgment of the comment":"Always acknowledge the customer's comments while sharing the proofs to the customer.","comment missed and shared incorrect information":"Please review customer comments carefully before sharing any information.","artwork merged with the background color was not informed":"Inform the customer whenever artwork elements merge with the background color and affect visibility.","wrong pms informed to the customer":"Always provide the correct PMS information to the customer.","information does not share with the customer":"Please ensure all required information is shared with the customer.","white ink not suggested":"Suggest white ink whenever it is required for proper print visibility.","color chart not attached":"Always attach the color chart whenever it is required.","mock-up/proof not attached":"Always attach the required mock-up/proof before sharing with the customer.","proof action not used":"Please use the correct proof action based on the scenario.","incorrect mockup/proof sent":"Always share correct mock-up/proof with the customer.","7 pt fonts not matched":"Please ensure font sizes meet the required specifications of the ordered products.","anti alias not checked":"Always verify anti-alias settings before finalizing the design.","artwork is not kept edge-to-edge":"Please ensure the artwork is kept edge-to-edge whenever required.","artwork not adjusted in tiff/pdf file":"Please make sure artwork adjustments are updated in all required files.","artwork not in safe zone":"Please keep all important artwork elements within the defined safe zone as per our SOP.","artwork not kept on artboard":"Ensure all artwork is properly placed within the artboard.","artwork not weld":"Please weld artwork elements properly as per requirement of the particular product.","artwork placement change":"Please maintain the correct artwork placement as per customer requirements.","bleed not given/wrong bleed given":"Always provide the correct bleed as per product requirements.","bleed not removed":"Please remove bleed whenever it is not required.","colour not matched":"Please ensure the artwork colors match the customer requirements.","comment misinterpreted":"Please read and interpret customer comments correctly and process the order accordingly.","content-aware not proper in design file":"Ensure content-aware edits are completed correctly in the design file.","customer comment missed":"Please review customer comments carefully before processing the order.","design file not kept in the folder":"Please save/upload the design file in the correct folder/cloud.","die-cut missed":"Always create the required die-cut shape in the design file.","drop shadow missing":"Ensure all required drop shadow effects are included in the design.","file not matched with last proof":"Please verify the file matches the last approved proof before completion.","finishing option missed":"Always apply the correct finishing option as required.","font style change":"Please maintain the font style as requested by the customer or provided in the artwork file.","font thickness not matched":"Ensure font thickness matches as per product's requirements.","fonts not outlined":"Always outline fonts in the design/print files.","fonts overlapping":"Please check and correct overlapping fonts in the artwork.","grommets on artwork":"Please adjust the artwork to avoid overlap with grommets whenever possible.","special effects not given":"Ensure all required special effects are applied to the artwork.","incorrect alignment":"Please verify artwork alignment before sharing proofs or creating design/print files.","incorrect die-cut shape":"Always create the correct die-cut shape as per SOP.","incorrect shape created":"Please ensure the correct shape is created according to customer requirements.","layer not separate in die-cut and white ink":"Always keep die-cut and white ink layers separate.","lettering requirements not met":"Please ensure all lettering requirements are followed correctly.","line in artwork":"Please review and remove unwanted lines from the artwork whenever possible.","missed to rotate/flip the artwork":"Ensure artwork is rotated or flipped correctly as required.","provided artwork not used":"Always use the artwork provided by the customer unless otherwise instructed.","overprint stroke not given":"Please apply overprint stroke whenever required.","space missing":"Please verify spacing and layout before finalizing the design.","special characters missing (,.:@)":"Ensure all special characters are included correctly in the artwork.","spelling mistake":"Please proofread all text carefully to avoid spelling errors.","stitch on artwork":"Please adjust the artwork to avoid overlap with stitches whenever possible.","template not used":"Always use the correct template as per product requirements.","text/logo/object missing":"Please ensure all required text, logos, and objects are included in the artwork.","traced artwork":"Please use proper tracing techniques to maintain artwork quality.","trade mark missing":"Always include trademark symbols whenever required.","trim mark in design file":"Please remove trim marks from the design file whenever they are not required.","two-sided file not created":"Please create two-sided files whenever required by the product specifications.","underline missing":"Ensure all required underline elements are included in the artwork.","uneven stroke":"Please maintain consistent stroke thickness throughout the artwork.","unwanted object/text in the artwork":"Please remove all unwanted objects and text before finalizing the artwork.","vector logo/svg file not used":"Always use the vector logo/SVG file whenever available.","watermark not removed":"Please remove watermarks from the artwork whenever possible.","white ink not created":"Always create a white ink layer whenever required.","white ink not proper":"Please ensure the white ink is created correctly.","wrong arrow direction":"Please verify arrow directions before finalizing the artwork.","wrong color mode":"Always use the correct color mode as per product requirements.","wrong file format created":"Please create files in the correct format as required.","wrong file name":"Please use the correct file naming as per the SOP.","wrong resolution(ppi)":"Always use the correct resolution as per product requirements.","wrong size":"Please verify artwork dimensions before finalizing the file.","wrong template":"Always use the correct template for the selected product.","object/shape overlapping":"Please check and correct overlapping objects or shapes before completion.","easy recreation not done":"Please perform easy recreation whenever the artwork can be recreated without difficulty.","font missing":"Please ensure all required fonts are included in the artwork.","step and repeat pattern not required":"Avoid creating step-and-repeat patterns when they are not required.","product requirement not met":"Please ensure all product requirements are followed correctly.","re-order missed":"Please verify whether the order is a reorder before processing.","design file not uploaded in admin":"Always upload the design file to the admin system.","enhance artwork not used":"Please enhance the artwork whenever improvement is required and possible.","action not used":"Please use the correct action based on the scenario.","content-aware not proper for print file":"Ensure content-aware edits are completed correctly in the print file.","incorrect finishing option used":"Always use the correct finishing option as per order requirements.","grommet provided instead of flash cut":"Please use Flash Cut when required instead of Grommets.","grommet provided instead of pole pocket":"Please use Pole Pocket when required instead of Grommets.","inside application instead of outside application":"Always create the print files as per correct product application Inside/outside.","new artwork shared by customer not used":"Always use the latest artwork shared by the customer.","outside application instead of inside application":"Always create the print files as per correct product application Inside/outside.","pocket missed":"Ensure the required pocket is included in the artwork setup.","pole pocket provided instead of grommet":"Please use Grommets when required instead of Pole Pocket.","print file not kept in the folder":"Please save the print file in the correct folder.","trim mark in print file":"Please remove trim marks from the print file whenever they are not required.","trim marks in design file":"Please remove trim marks from the design file whenever they are not required.","trim marks not remove":"Please ensure trim marks are removed whenever they are not required.","vendor missed":"Please create the print/design files as per correct vendor shown in the admin.","script adherence":"Please follow the approved script and process guidelines.","footprint not used":"Please use the correct footprint whenever required.","admin not refreshed":"Please refresh the admin panel before sharing the proofs to the customer.","after recreation status does not update on admin":"Always update the correct status on admin after recreation.","call not done when required":"Please contact the customer whenever a call is required.","delivery-related queries not informed to the production":"Always inform the production team about delivery-related queries.","department communication sheet not updated":"Please update the Department Communication Sheet whenever required.","did not inform finishing option to the production":"Always share finishing option details with the production team.","had-order follow-up sheet not updated":"Please update the HAD Order Follow-up Sheet whenever required.","hardware-related queries not informed to the production":"Always inform the production team about hardware-related queries.","information not shared in internal comment":"Please include all required information in internal comments.","orientation changed however not informed to other departments":"Please inform other departments by mentioning the changes in internal comments whenever orientation changes are made.","pms not provided to production":"Always provide PMS information to the production team/other department whenever required.","print file not attached on admin":"Please attach the print file in the admin whenever it is required.","required product changes not updated on admin":"Please update all required product changes on admin.","status not changed":"Always update the correct status based on the order stage.","ticket not created":"Please create a ticket whenever required by the process.","wrong status updated":"Always use the correct status based on the scenarios informing to the customer.","enhance not used":"Please use enhancement whenever artwork quality improvement is required.","call ticket/notes not updated":"Please update call tickets and notes after customer communication.","canned response not used":"Always use the correct and full canned response based on the scenario.","comparision not done":"Please compare all relevant files and information before proceeding.","file not kept in the folder":"Please save the file in the correct folder location.","flatten file saved in folder":"Please save the correct editable file in the designated folder.","folder path not updated in initial level":"Please update the folder path correctly at the initial stage.","fonts package not saved":"Please save the font package whenever required.","incorrect alignment_dpe":"Please verify artwork alignment before finalizing the file.","incorrect file format":"Please use the correct file format as per process requirements.","incorrect proof action":"Please use the correct proof action based on the scenario.","paper template not created":"Please create the paper template whenever it is required.","proof name not used":"Please use the correct proof naming convention.","recreation format not followed":"Please follow the standard recreation format whenever recreation is performed.","screenshot not kept in folder":"Please save the required screenshot in the correct folder.","smart object not created":"Please create smart objects whenever required.","unwanted object/text in the artwork_dpe":"Please remove all unwanted objects and text before finalizing the artwork.","view file not kept in tiff/al file":"Please maintain the view file in the required TIFF/AI file."};
+
+function getKP(r){return RCA_MAP[r.trim().toLowerCase()]||null;}
+function normRCA(s){return s.trim().toLowerCase();}
+const BC_COLS=[15,17,20,21,22,24,26,29,31,32];
+const SKIP=new Set(['na','n/a','no','yes','none','[list]','']);
+function computeBC(row){return BC_COLS.map(i=>(row[i]!=null?String(row[i]).trim():'')).filter(v=>v&&!SKIP.has(v.toLowerCase())).join('; ');}
+
+function excelSerialToYMD(serial){
+  const days=Math.floor(serial)-25569;
+  const d=new Date(days*86400*1000);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+}
+function toYMD(v){
+  if(!v&&v!==0)return '';
+  if(typeof v==='number')return excelSerialToYMD(v);
+  const s=String(v).trim();
+  if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);
+  const m=s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+  if(m)return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  return '';
+}
+function dispYMD(ymd){
+  if(!ymd)return '';
+  const[y,m,d]=ymd.split('-');
+  return `${d}-${m}-${y}`;
+}
+
+let allRows=[],dMap={},dList=[],curIdx=0,allDates=[];
+
+function showErr(m){const e=document.getElementById('er');e.textContent=m;e.style.display=m?'block':'none';}
+function onDrop(e){e.preventDefault();document.getElementById('dz').classList.remove('drag');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);}
+
+function loadFile(file){
+  if(!file)return;showErr('');
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const wb=XLSX.read(ev.target.result,{type:'array',cellDates:false});
+      const aoa=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:true});
+      if(aoa.length<2){showErr('No data found.');return;}
+      allRows=aoa.slice(1).filter(r=>(r[6]||'').toString().trim());
+      populateFilters();
+      applyFilters();
+      document.getElementById('fs').style.display='flex';
+      document.getElementById('ss').style.display='flex';
+      document.getElementById('empty').style.display='none';
+      document.getElementById('uz-t').textContent='✅ '+allRows.length+' rows loaded';
+    }catch(ex){showErr('Error: '+ex.message);}
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function uniqSorted(arr){return[...new Set(arr)].filter(Boolean);}
+
+function populateFilters(){
+  const designers=uniqSorted(allRows.map(r=>(r[6]||'').toString().trim())).sort();
+  const qas=uniqSorted(allRows.map(r=>(r[4]||'').toString().trim())).sort();
+  const weeks=uniqSorted(allRows.map(r=>(r[1]||'').toString().trim())).sort((a,b)=>Number(a)-Number(b));
+  allDates=uniqSorted(allRows.map(r=>toYMD(r[5])).filter(Boolean)).sort();
+
+  fill('fdesigner',designers,'All Designers');
+  fill('fqa',qas,'All QAs');
+  fill('fweek',weeks,'All Weeks');
+  fillDates('fdate1','From — All Dates');
+  fillDates('fdate2','To — All Dates');
+}
+
+function fill(id,items,ph){
+  const s=document.getElementById(id),cur=s.value;
+  s.innerHTML=`<option value="">${ph}</option>`;
+  items.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;s.appendChild(o);});
+  if(cur)s.value=cur;
+}
+function fillDates(id,ph){
+  const s=document.getElementById(id),cur=s.value;
+  s.innerHTML=`<option value="">${ph}</option>`;
+  allDates.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=dispYMD(d);s.appendChild(o);});
+  if(cur)s.value=cur;
+}
+
+function applyFilters(){
+  const designer=document.getElementById('fdesigner').value;
+  const qa=document.getElementById('fqa').value;
+  const week=document.getElementById('fweek').value;
+  const d1=document.getElementById('fdate1').value;
+  const d2=document.getElementById('fdate2').value;
+
+  const filtered=allRows.filter(r=>{
+    if(designer&&(r[6]||'').toString().trim()!==designer)return false;
+    if(qa&&(r[4]||'').toString().trim()!==qa)return false;
+    if(week&&(r[1]||'').toString().trim()!==week)return false;
+    if(d1||d2){
+      const dk=toYMD(r[5]);
+      if(!dk)return false;
+      if(d1&&dk<d1)return false;
+      if(d2&&dk>d2)return false;
+    }
+    return true;
+  });
+
+  dMap={};
+  filtered.forEach(row=>{
+    const d=(row[6]||'').toString().trim();
+    if(!d)return;
+    if(!dMap[d])dMap[d]=[];
+    dMap[d].push(row);
+  });
+  dList=Object.keys(dMap).sort();
+
+  // Stats
+  document.getElementById('sb-rows').textContent=filtered.length;
+  document.getElementById('sb-designers').textContent=dList.length;
+  const parts=[];
+  if(designer)parts.push(designer.split('[')[0].trim());
+  if(qa)parts.push('QA: '+qa);
+  if(week)parts.push('Wk '+week);
+  if(d1||d2)parts.push((d1?dispYMD(d1):'…')+' → '+(d2?dispYMD(d2):'…'));
+  const fb=document.getElementById('fb');
+  if(parts.length){fb.style.display='block';fb.textContent='🔽 '+parts.join(' · ');}
+  else fb.style.display='none';
+
+  const sel=document.getElementById('ds');
+  sel.innerHTML='<option value="">— Select Designer —</option>';
+  dList.forEach((d,i)=>{const o=document.createElement('option');o.value=i;o.textContent=d;sel.appendChild(o);});
+  document.getElementById('dn').style.display=dList.length?'flex':'none';
+  document.getElementById('ec').style.display='none';
+  curIdx=0;updateNav();
+}
+
+function resetFilters(){
+  ['fdesigner','fqa','fweek','fdate1','fdate2'].forEach(id=>document.getElementById(id).value='');
+  applyFilters();
+}
+
+function showD(val){
+  if(val==='')return;
+  curIdx=parseInt(val);
+  document.getElementById('ec').style.display='block';
+  updateNav();renderEmail();
+}
+function updateNav(){
+  document.getElementById('nl').textContent=dList.length?(curIdx+1)+' / '+dList.length:'0 / 0';
+  document.getElementById('pb').disabled=curIdx===0;
+  document.getElementById('nb2').disabled=curIdx>=dList.length-1;
+}
+function nav(d){
+  curIdx=Math.max(0,Math.min(dList.length-1,curIdx+d));
+  document.getElementById('ds').value=curIdx;
+  document.getElementById('ec').style.display='block';
+  updateNav();renderEmail();
+}
+
+function renderEmail(){
+  const dName=dList[curIdx];
+  const rows=dMap[dName];
+  const firstName=dName.split('[')[0].trim().split(' ')[0];
+  const month=(rows[0][2]||'').toString().trim();
+  const year=(rows[0][3]||'').toString().trim();
+  const monthYear=year?month+' '+year:month;
+
+  let fatal=0,nonFatal=0;
+  rows.forEach(r=>{const fs=(r[41]||'').toString().trim().toLowerCase();if(fs==='fatal')fatal++;else if(fs.includes('non'))nonFatal++;});
+  const total=fatal+nonFatal;
+
+  let ss=0,sc=0;
+  rows.forEach(r=>{const s=parseFloat(r[47]);if(!isNaN(s)){ss+=s;sc++;}});
+  const avgN=sc?ss/sc:0;
+  const avgS=sc?avgN.toFixed(2)+'%':'N/A';
+  const scoreColor=avgN>=85?'#c8e6c9':avgN>=70?'#fff9c4':'#ffcdd2';
+  const scoreTxt=avgN>=85?'#1b5e20':avgN>=70?'#827717':'#b71c1c';
+
+  const rcaN={};
+  rows.forEach(r=>{
+    const bc=computeBC(r);if(!bc)return;
+    bc.split(';').forEach(e=>{
+      const raw=e.trim();if(!raw||SKIP.has(raw.toLowerCase()))return;
+      const nk=normRCA(raw);
+      if(!rcaN[nk])rcaN[nk]={label:raw,count:0};
+      rcaN[nk].count++;
+    });
+  });
+  const rcaE=Object.values(rcaN).sort((a,b)=>b.count-a.count);
+  const seenKP=new Set();const kps=[];
+  rcaE.forEach(({label})=>{const kp=getKP(label);if(kp&&!seenKP.has(kp)){seenKP.add(kp);kps.push(kp);}});
+
+  const scoreMsg=avgN>=85
+    ?`Your current score for <strong>${monthYear}</strong> is <strong>${avgS}</strong>, which is a great score. Keep up the excellent work and maintain this quality consistently.`
+    :avgN>=70
+    ?`Your current score for <strong>${monthYear}</strong> is <strong>${avgS}</strong>, which is an average score. Please focus more on quality checks and avoid repeating similar mistakes. With better attention to detail, you can achieve a much higher score.`
+    :`Your current score for <strong>${monthYear}</strong> is <strong>${avgS}</strong>. There is significant room for improvement. Please review the errors above carefully and ensure they are not repeated.`;
+
+  const auditTbl=`<table style="border-collapse:collapse;font-family:Aptos,Arial,sans-serif;font-size:13px;margin:8px 0"><thead><tr>
+    <th style="background:#d4c4f6;color:#280a80;font-weight:700;border:1px solid #b0a0e0;padding:7px 14px">Month</th>
+    <th style="background:#d4c4f6;color:#280a80;font-weight:700;border:1px solid #b0a0e0;padding:7px 14px">Designer's Name [CP ID]</th>
+    <th style="background:#d4c4f6;color:#280a80;font-weight:700;border:1px solid #b0a0e0;padding:7px 14px">Fatal</th>
+    <th style="background:#d4c4f6;color:#280a80;font-weight:700;border:1px solid #b0a0e0;padding:7px 14px">Non-Fatal</th>
+    <th style="background:#d4c4f6;color:#280a80;font-weight:700;border:1px solid #b0a0e0;padding:7px 14px">Total Audits</th>
+    <th style="background:#d4c4f6;color:#280a80;font-weight:700;border:1px solid #b0a0e0;padding:7px 14px">Average Score</th>
+    </tr></thead><tbody><tr>
+    <td style="background:#fff;border:1px solid #ccc;padding:6px 14px;text-align:center">${monthYear}</td>
+    <td style="background:#fff;border:1px solid #ccc;padding:6px 14px;text-align:center">${dName}</td>
+    <td style="border:1px solid #ccc;padding:6px 14px;text-align:center">${fatal}</td>
+    <td style="border:1px solid #ccc;padding:6px 14px;text-align:center">${nonFatal}</td>
+    <td style="border:1px solid #ccc;padding:6px 14px;text-align:center">${total}</td>
+    <td style="background:${scoreColor};color:${scoreTxt};font-weight:700;border:1px solid #ccc;padding:6px 14px;text-align:center">${avgS}</td>
+    </tr></tbody></table>`;
+
+  const rcaTbl=rcaE.length?`<table style="border-collapse:collapse;font-family:Aptos,Arial,sans-serif;font-size:13px;margin:8px 0;min-width:340px"><thead><tr>
+    <th style="background:#d4c4f6;color:#280a80;font-weight:700;border:1px solid #b0a0e0;padding:7px 14px;text-align:left;min-width:300px">RCA of Errors</th>
+    <th style="background:#d4c4f6;color:#280a80;font-weight:700;border:1px solid #b0a0e0;padding:7px 14px;text-align:center;min-width:60px">Count</th>
+    </tr></thead><tbody>${rcaE.map(({label,count})=>`<tr>
+    <td style="background:#fff;border:1px solid #ccc;padding:6px 14px">${label}</td>
+    <td style="background:#ffcdd2;color:#b71c1c;font-weight:700;border:1px solid #ccc;padding:6px 14px;text-align:center">${count}</td>
+    </tr>`).join('')}</tbody></table>`:'';
+
+  const kpHTML=kps.length
+    ?`<ul style="margin:6px 0 0 20px;padding:0;font-family:Aptos,Arial,sans-serif;font-size:14px">${kps.map(p=>`<li style="margin-bottom:5px">${p}</li>`).join('')}</ul>`
+    :`<ul style="margin:6px 0 0 20px;padding:0"><li style="font-family:Aptos,Arial,sans-serif;font-size:14px">Please follow the standard design process and maintain consistent quality across all orders.</li></ul>`;
+
+  document.getElementById('pv').innerHTML=`
+    <p style="font-family:Aptos,Arial,sans-serif;font-size:14px;margin-bottom:10px">Hello ${firstName},</p>
+    <p style="font-family:Aptos,Arial,sans-serif;font-size:14px;margin-bottom:10px">Hope you are doing well.</p>
+    <p style="font-family:Aptos,Arial,sans-serif;font-size:14px;margin-bottom:10px">Please find below your <strong>Monthly Design Quality 1:1 feedback</strong> detail of month <strong>${monthYear}</strong>.</p>
+    <div class="sec-h">📊 Audit Summary:</div>${auditTbl}
+    ${rcaE.length?`<div class="sec-h">📌 RCAs of Errors:</div>${rcaTbl}`:''}
+    <div class="sec-h">✅ Key Points to Learn:</div>${kpHTML}
+    <div class="sec-h">💬 Overall Comments:</div>
+    <p style="font-family:Aptos,Arial,sans-serif;font-size:14px;margin-bottom:10px">${scoreMsg}</p>
+    <p style="font-family:Aptos,Arial,sans-serif;font-size:14px">Please feel free to reach out to me for any queries.</p>`;
+}
+
+function copyEmailHTML(){
+  const body=document.getElementById('pv');
+  const btn=document.getElementById('cpb');
+  const wrapper=`<div style="font-family:Aptos,Arial,sans-serif;font-size:14px;color:#1a0a4a;line-height:1.8">${body.innerHTML}</div>`;
+  try{
+    const hb=new Blob([wrapper],{type:'text/html'});
+    const tb=new Blob([body.innerText],{type:'text/plain'});
+    navigator.clipboard.write([new ClipboardItem({'text/html':hb,'text/plain':tb})]).then(()=>{
+      btn.textContent='✅ Copied!';setTimeout(()=>{btn.textContent='📋 Copy Email';},2500);
+    }).catch(()=>fallback(body,btn));
+  }catch(e){fallback(body,btn);}
+}
+function fallback(body,btn){
+  const tmp=document.createElement('div');
+  tmp.setAttribute('contenteditable','true');
+  tmp.style.cssText='position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none';
+  tmp.innerHTML=body.innerHTML;
+  document.body.appendChild(tmp);
+  const range=document.createRange();range.selectNodeContents(tmp);
+  const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+  document.execCommand('copy');sel.removeAllRanges();document.body.removeChild(tmp);
+  btn.textContent='✅ Copied!';setTimeout(()=>{btn.textContent='📋 Copy Email';},2500);
+}
+</script>
+</body>
+</html>
