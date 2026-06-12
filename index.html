@@ -111,11 +111,9 @@ body{font-family:'Aptos',system-ui,sans-serif;background:var(--bg);color:var(--t
     <!-- Filters -->
     <div class="filter-section" id="fs">
       <div class="filter-title">⚡ Filters — instant</div>
+      
+      <!-- Designer filter removed as requested -->
 
-      <div class="fg">
-        <label>Designer's Name</label>
-        <select id="fdesigner" onchange="applyFilters()"><option value="">All Designers</option></select>
-      </div>
       <div class="fg">
         <label>QA Name</label>
         <select id="fqa" onchange="applyFilters()"><option value="">All QAs</option></select>
@@ -154,7 +152,18 @@ body{font-family:'Aptos',system-ui,sans-serif;background:var(--bg);color:var(--t
         <span class="nav-lbl" id="nl">0 / 0</span>
         <button class="nav-btn" id="nb2" onclick="nav(1)">›</button>
       </div>
-      <button class="copy-btn" id="cpb" onclick="copyEmailHTML()">📋 Copy Email</button>
+      <button class="copy-btn" id="cpb" onclick="copyEmailHTML()">
+📋 Copy Email
+</button>
+
+
+<button class="copy-btn"
+style="margin-left:5px"
+onclick="sendEmail()">
+
+✉ Send Email
+
+</button>
     </div>
 
     <!-- Email -->
@@ -169,6 +178,15 @@ body{font-family:'Aptos',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+// ========== USER SETTINGS ==========
+
+// Global storage for email triggers
+let currentEmailData = {
+  to: "",
+  cc: "",
+  subject: ""
+};
+
 const RCA_MAP={"orientation changed however not informed to the customer":"Please do not miss to inform the customer about orientation changed.","pms not provided to customer":"Always provide PMS to the customer whenever it is possible to be matched.","recreation not offered":"Offer the recreation to the customer whenever the artwork is possible to be recreated or the order is eligible to move the order to recreation.","recreation not required":"Do not offer the recreation unnecessarily when the recreation is not required/Not possible/Order is not eligible for recreation.","proof not required":"Avoid sharing proofs when they are not required.","proof requested/required but not shared":"Always share the proofs to the customer whenever the customer requests proofs or whenever it is required.","artwork recreated but not informed":"Please inform the customer when the artwork has been recreated/enhanced/vectorised.","alternate product not suggested":"Please suggest the correct product to the customer when they have ordered/required different product based on their requirement.","incorrect/incomplete information shared with the customer about artwork's resolution":"Always share the correct resolution information to the customer, specially in fuzzy artwork/low resolution artworks.","blank space not informed":"Inform the customer about blank space appearing in the design file.","product finishing information not shared":"Always share the product finishing information to the customer without miss.","grommet on artwork not informed":"Please inform the customer about overlapping grommets whenever the artwork is not adjustable.","stitch on artwork not informed":"Please inform the customer about overlapping stitches whenever the artwork is not adjustable.","artwork bit fuzzy not informed":"Inform the customer about fuzziness of the artwork whenever it is required.","low-resolution artwork not informed":"Inform the customer about low resolution of the artwork whenever it is required.","lettering color code not informed":"Always provide lettering color code to the customer.","water mark on artwork not informed":"Please do not miss to inform the customer about watermark appearance in the artwork which is not possible to be removed.","prefer file formats not informed":"Always inform the customer about the preferred file formats whenever required.","7pt font not informed":"Please inform the customer whenever the font size is below the recommended size.","tax exemption not informed":"Always inform the customer about tax exemption eligibility whenever applicable.","line in artwork not informed":"Please inform the customer about lines appearing in the artwork whenever they cannot be removed.","stretched the artwork not informed":"Inform the customer whenever the artwork has been stretched to fit the product dimensions.","item id wise information not shared":"Always share item ID-wise information with the customer.","incorrect product requirement informed":"Always verify and share the correct product requirements with the customer.","artwork adjusted but not informed/incorrectly adjustment informed":"Inform the customer whenever artwork adjustments are made and provide accurate adjustment details.","provided artwork not used and shared incorrect information":"Always use the artwork provided by the customer and share accurate information.","quantity not confirmed with the customer":"Please confirm the required quantity with the customer whenever clarification is needed.","postscript not informed":"Always inform the customer about any required postscript information.","not acknowledgment of the comment":"Always acknowledge the customer's comments while sharing the proofs to the customer.","comment missed and shared incorrect information":"Please review customer comments carefully before sharing any information.","artwork merged with the background color was not informed":"Inform the customer whenever artwork elements merge with the background color and affect visibility.","wrong pms informed to the customer":"Always provide the correct PMS information to the customer.","information does not share with the customer":"Please ensure all required information is shared with the customer.","white ink not suggested":"Suggest white ink whenever it is required for proper print visibility.","color chart not attached":"Always attach the color chart whenever it is required.","mock-up/proof not attached":"Always attach the required mock-up/proof before sharing with the customer.","proof action not used":"Please use the correct proof action based on the scenario.","incorrect mockup/proof sent":"Always share correct mock-up/proof with the customer.","7 pt fonts not matched":"Please ensure font sizes meet the required specifications of the ordered products.","anti alias not checked":"Always verify anti-alias settings before finalizing the design.","artwork is not kept edge-to-edge":"Please ensure the artwork is kept edge-to-edge whenever required.","artwork not adjusted in tiff/pdf file":"Please make sure artwork adjustments are updated in all required files.","artwork not in safe zone":"Please keep all important artwork elements within the defined safe zone as per our SOP.","artwork not kept on artboard":"Ensure all artwork is properly placed within the artboard.","artwork not weld":"Please weld artwork elements properly as per requirement of the particular product.","artwork placement change":"Please maintain the correct artwork placement as per customer requirements.","bleed not given/wrong bleed given":"Always provide the correct bleed as per product requirements.","bleed not removed":"Please remove bleed whenever it is not required.","colour not matched":"Please ensure the artwork colors match the customer requirements.","comment misinterpreted":"Please read and interpret customer comments correctly and process the order accordingly.","content-aware not proper in design file":"Ensure content-aware edits are completed correctly in the design file.","customer comment missed":"Please review customer comments carefully before processing the order.","design file not kept in the folder":"Please save/upload the design file in the correct folder/cloud.","die-cut missed":"Always create the required die-cut shape in the design file.","drop shadow missing":"Ensure all required drop shadow effects are included in the design.","file not matched with last proof":"Please verify the file matches the last approved proof before completion.","finishing option missed":"Always apply the correct finishing option as required.","font style change":"Please maintain the font style as requested by the customer or provided in the artwork file.","font thickness not matched":"Ensure font thickness matches as per product's requirements.","fonts not outlined":"Always outline fonts in the design/print files.","fonts overlapping":"Please check and correct overlapping fonts in the artwork.","grommets on artwork":"Please adjust the artwork to avoid overlap with grommets whenever possible.","special effects not given":"Ensure all required special effects are applied to the artwork.","incorrect alignment":"Please verify artwork alignment before sharing proofs or creating design/print files.","incorrect die-cut shape":"Always create the correct die-cut shape as per SOP.","incorrect shape created":"Please ensure the correct shape is created according to customer requirements.","layer not separate in die-cut and white ink":"Always keep die-cut and white ink layers separate.","lettering requirements not met":"Please ensure all lettering requirements are followed correctly.","line in artwork":"Please review and remove unwanted lines from the artwork whenever possible.","missed to rotate/flip the artwork":"Ensure artwork is rotated or flipped correctly as required.","provided artwork not used":"Always use the artwork provided by the customer unless otherwise instructed.","overprint stroke not given":"Please apply overprint stroke whenever required.","space missing":"Please verify spacing and layout before finalizing the design.","special characters missing (,.:@)":"Ensure all special characters are included correctly in the artwork.","spelling mistake":"Please proofread all text carefully to avoid spelling errors.","stitch on artwork":"Please adjust the artwork to avoid overlap with stitches whenever possible.","template not used":"Always use the correct template as per product requirements.","text/logo/object missing":"Please ensure all required text, logos, and objects are included in the artwork.","traced artwork":"Please use proper tracing techniques to maintain artwork quality.","trade mark missing":"Always include trademark symbols whenever required.","trim mark in design file":"Please remove trim marks from the design file whenever they are not required.","two-sided file not created":"Please create two-sided files whenever required by the product specifications.","underline missing":"Ensure all required underline elements are included in the artwork.","uneven stroke":"Please maintain consistent stroke thickness throughout the artwork.","unwanted object/text in the artwork":"Please remove all unwanted objects and text before finalizing the artwork.","vector logo/svg file not used":"Always use the vector logo/SVG file whenever available.","watermark not removed":"Please remove watermarks from the artwork whenever possible.","white ink not created":"Always create a white ink layer whenever required.","white ink not proper":"Please ensure the white ink is created correctly.","wrong arrow direction":"Please verify arrow directions before finalizing the artwork.","wrong color mode":"Always use the correct color mode as per product requirements.","wrong file format created":"Please create files in the correct format as required.","wrong file name":"Please use the correct file naming as per the SOP.","wrong resolution(ppi)":"Always use the correct resolution as per product requirements.","wrong size":"Please verify artwork dimensions before finalizing the file.","wrong template":"Always use the correct template for the selected product.","object/shape overlapping":"Please check and correct overlapping objects or shapes before completion.","easy recreation not done":"Please perform easy recreation whenever the artwork can be recreated without difficulty.","font missing":"Please ensure all required fonts are included in the artwork.","step and repeat pattern not required":"Avoid creating step-and-repeat patterns when they are not required.","product requirement not met":"Please ensure all product requirements are followed correctly.","re-order missed":"Please verify whether the order is a reorder before processing.","design file not uploaded in admin":"Always upload the design file to the admin system.","enhance artwork not used":"Please enhance the artwork whenever improvement is required and possible.","action not used":"Please use the correct action based on the scenario.","content-aware not proper for print file":"Ensure content-aware edits are completed correctly in the print file.","incorrect finishing option used":"Always use the correct finishing option as per order requirements.","grommet provided instead of flash cut":"Please use Flash Cut when required instead of Grommets.","grommet provided instead of pole pocket":"Please use Pole Pocket when required instead of Grommets.","inside application instead of outside application":"Always create the print files as per correct product application Inside/outside.","new artwork shared by customer not used":"Always use the latest artwork shared by the customer.","outside application instead of inside application":"Always create the print files as per correct product application Inside/outside.","pocket missed":"Ensure the required pocket is included in the artwork setup.","pole pocket provided instead of grommet":"Please use Grommets when required instead of Pole Pocket.","print file not kept in the folder":"Please save the print file in the correct folder.","trim mark in print file":"Please remove trim marks from the print file whenever they are not required.","trim marks in design file":"Please remove trim marks from the design file whenever they are not required.","trim marks not remove":"Please ensure trim marks are removed whenever they are not required.","vendor missed":"Please create the print/design files as per correct vendor shown in the admin.","script adherence":"Please follow the approved script and process guidelines.","footprint not used":"Please use the correct footprint whenever required.","admin not refreshed":"Please refresh the admin panel before sharing the proofs to the customer.","after recreation status does not update on admin":"Always update the correct status on admin after recreation.","call not done when required":"Please contact the customer whenever a call is required.","delivery-related queries not informed to the production":"Always inform the production team about delivery-related queries.","department communication sheet not updated":"Please update the Department Communication Sheet whenever required.","did not inform finishing option to the production":"Always share finishing option details with the production team.","had-order follow-up sheet not updated":"Please update the HAD Order Follow-up Sheet whenever required.","hardware-related queries not informed to the production":"Always inform the production team about hardware-related queries.","information not shared in internal comment":"Please include all required information in internal comments.","orientation changed however not informed to other departments":"Please inform other departments by mentioning the changes in internal comments whenever orientation changes are made.","pms not provided to production":"Always provide PMS information to the production team/other department whenever required.","print file not attached on admin":"Please attach the print file in the admin whenever it is required.","required product changes not updated on admin":"Please update all required product changes on admin.","status not changed":"Always update the correct status based on the order stage.","ticket not created":"Please create a ticket whenever required by the process.","wrong status updated":"Always use the correct status based on the scenarios informing to the customer.","enhance not used":"Please use enhancement whenever artwork quality improvement is required.","call ticket/notes not updated":"Please update call tickets and notes after customer communication.","canned response not used":"Always use the correct and full canned response based on the scenario.","comparision not done":"Please compare all relevant files and information before proceeding.","file not kept in the folder":"Please save the file in the correct folder location.","flatten file saved in folder":"Please save the correct editable file in the designated folder.","folder path not updated in initial level":"Please update the folder path correctly at the initial stage.","fonts package not saved":"Please save the font package whenever required.","incorrect alignment_dpe":"Please verify artwork alignment before finalizing the file.","incorrect file format":"Please use the correct file format as per process requirements.","incorrect proof action":"Please use the correct proof action based on the scenario.","paper template not created":"Please create the paper template whenever it is required.","proof name not used":"Please use the correct proof naming convention.","recreation format not followed":"Please follow the standard recreation format whenever recreation is performed.","screenshot not kept in folder":"Please save the required screenshot in the correct folder.","smart object not created":"Please create smart objects whenever required.","unwanted object/text in the artwork_dpe":"Please remove all unwanted objects and text before finalizing the artwork.","view file not kept in tiff/al file":"Please maintain the view file in the required TIFF/AI file."};
 
 function getKP(r){return RCA_MAP[r.trim().toLowerCase()]||null;}
@@ -225,12 +243,10 @@ function loadFile(file){
 function uniqSorted(arr){return[...new Set(arr)].filter(Boolean);}
 
 function populateFilters(){
-  const designers=uniqSorted(allRows.map(r=>(r[6]||'').toString().trim())).sort();
   const qas=uniqSorted(allRows.map(r=>(r[4]||'').toString().trim())).sort();
   const weeks=uniqSorted(allRows.map(r=>(r[1]||'').toString().trim())).sort((a,b)=>Number(a)-Number(b));
   allDates=uniqSorted(allRows.map(r=>toYMD(r[5])).filter(Boolean)).sort();
 
-  fill('fdesigner',designers,'All Designers');
   fill('fqa',qas,'All QAs');
   fill('fweek',weeks,'All Weeks');
   fillDates('fdate1','From — All Dates');
@@ -251,14 +267,12 @@ function fillDates(id,ph){
 }
 
 function applyFilters(){
-  const designer=document.getElementById('fdesigner').value;
   const qa=document.getElementById('fqa').value;
   const week=document.getElementById('fweek').value;
   const d1=document.getElementById('fdate1').value;
   const d2=document.getElementById('fdate2').value;
 
   const filtered=allRows.filter(r=>{
-    if(designer&&(r[6]||'').toString().trim()!==designer)return false;
     if(qa&&(r[4]||'').toString().trim()!==qa)return false;
     if(week&&(r[1]||'').toString().trim()!==week)return false;
     if(d1||d2){
@@ -283,7 +297,6 @@ function applyFilters(){
   document.getElementById('sb-rows').textContent=filtered.length;
   document.getElementById('sb-designers').textContent=dList.length;
   const parts=[];
-  if(designer)parts.push(designer.split('[')[0].trim());
   if(qa)parts.push('QA: '+qa);
   if(week)parts.push('Wk '+week);
   if(d1||d2)parts.push((d1?dispYMD(d1):'…')+' → '+(d2?dispYMD(d2):'…'));
@@ -300,7 +313,7 @@ function applyFilters(){
 }
 
 function resetFilters(){
-  ['fdesigner','fqa','fweek','fdate1','fdate2'].forEach(id=>document.getElementById(id).value='');
+  ['fqa','fweek','fdate1','fdate2'].forEach(id=>document.getElementById(id).value='');
   applyFilters();
 }
 
@@ -326,9 +339,23 @@ function renderEmail(){
   const dName=dList[curIdx];
   const rows=dMap[dName];
   const firstName=dName.split('[')[0].trim().split(' ')[0];
+
   const month=(rows[0][2]||'').toString().trim();
   const year=(rows[0][3]||'').toString().trim();
   const monthYear=year?month+' '+year:month;
+
+  const designerEmail=(rows[0][55]||'').toString().trim();
+  const designerTLEmail=(rows[0][56]||'').toString().trim();
+  const qaTLEmail=(rows[0][57]||'').toString().trim();
+
+  const subjectLine=`Design Quality 1:1 | Feedback Session | ${dName} | ${monthYear}`;
+  
+  // Store for Send Email button
+  currentEmailData = {
+    to: designerEmail,
+    cc: `${designerTLEmail}; ${qaTLEmail}`,
+    subject: subjectLine
+  };
 
   let fatal=0,nonFatal=0;
   rows.forEach(r=>{const fs=(r[41]||'').toString().trim().toLowerCase();if(fs==='fatal')fatal++;else if(fs.includes('non'))nonFatal++;});
@@ -385,11 +412,29 @@ function renderEmail(){
     <td style="background:#ffcdd2;color:#b71c1c;font-weight:700;border:1px solid #ccc;padding:6px 14px;text-align:center">${count}</td>
     </tr>`).join('')}</tbody></table>`:'';
 
-  const kpHTML=kps.length
-    ?`<ul style="margin:6px 0 0 20px;padding:0;font-family:Aptos,Arial,sans-serif;font-size:14px">${kps.map(p=>`<li style="margin-bottom:5px">${p}</li>`).join('')}</ul>`
-    :`<ul style="margin:6px 0 0 20px;padding:0"><li style="font-family:Aptos,Arial,sans-serif;font-size:14px">Please follow the standard design process and maintain consistent quality across all orders.</li></ul>`;
+  let editableKP=[];
+  rcaE.forEach(({label})=>{
+   const point=getKP(label);
+   if(point && !editableKP.includes(point)){
+      editableKP.push(point);
+   }
+  });
 
-  document.getElementById('pv').innerHTML=`
+  if(editableKP.length===0){
+    editableKP=[
+    "Please review the audit feedback carefully and avoid repeating similar mistakes.",
+    "Please follow the standard design process and maintain consistent quality."
+    ];
+  }
+
+  const kpHTML=`<div id="kp-editor" contenteditable="true" style="border:1px solid #e2d8f8;padding:12px;border-radius:8px;background:#fff;font-family:Aptos;font-size:14px;">${editableKP.map(p=>`• ${p}<br>`).join('')}</div>`;
+
+  document.getElementById('pv').innerHTML = `
+    <div style="font-family:Aptos,Arial,sans-serif;font-size:14px;margin-bottom:15px">
+      <b>Subject:</b> ${subjectLine}<br>
+      <b>To:</b> ${designerEmail}<br>
+      <b>CC:</b> ${designerTLEmail}; ${qaTLEmail}
+    </div>
     <p style="font-family:Aptos,Arial,sans-serif;font-size:14px;margin-bottom:10px">Hello ${firstName},</p>
     <p style="font-family:Aptos,Arial,sans-serif;font-size:14px;margin-bottom:10px">Hope you are doing well.</p>
     <p style="font-family:Aptos,Arial,sans-serif;font-size:14px;margin-bottom:10px">Please find below your <strong>Monthly Design Quality 1:1 feedback</strong> detail of month <strong>${monthYear}</strong>.</p>
@@ -397,8 +442,8 @@ function renderEmail(){
     ${rcaE.length?`<div class="sec-h">📌 RCAs of Errors:</div>${rcaTbl}`:''}
     <div class="sec-h">✅ Key Points to Learn:</div>${kpHTML}
     <div class="sec-h">💬 Overall Comments:</div>
-    <p style="font-family:Aptos,Arial,sans-serif;font-size:14px;margin-bottom:10px">${scoreMsg}</p>
-    <p style="font-family:Aptos,Arial,sans-serif;font-size:14px">Please feel free to reach out to me for any queries.</p>`;
+    <div id="comment-editor" contenteditable="true" style="border:1px solid #e2d8f8;padding:12px;border-radius:8px;font-family:Aptos;font-size:14px;background:#fff;">${scoreMsg}</div>
+    <p style="font-family:Aptos,Arial,sans-serif;font-size:14px;margin-top:15px">Please feel free to reach out to me for any queries.</p>`;
 }
 
 function copyEmailHTML(){
@@ -413,6 +458,7 @@ function copyEmailHTML(){
     }).catch(()=>fallback(body,btn));
   }catch(e){fallback(body,btn);}
 }
+
 function fallback(body,btn){
   const tmp=document.createElement('div');
   tmp.setAttribute('contenteditable','true');
@@ -423,6 +469,66 @@ function fallback(body,btn){
   const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
   document.execCommand('copy');sel.removeAllRanges();document.body.removeChild(tmp);
   btn.textContent='✅ Copied!';setTimeout(()=>{btn.textContent='📋 Copy Email';},2500);
+}
+
+async function sendEmail(){
+
+const htmlBody =
+document.getElementById("pv").innerHTML;
+
+
+const emailData = {
+
+to: currentEmailData.to,
+
+cc: currentEmailData.cc,
+
+subject: currentEmailData.subject,
+
+body: htmlBody
+
+};
+
+
+try{
+
+
+const response = await fetch(
+"https://default27374b0e1a3c4f60be51de13a13a53.10.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/0ee38d11bf0b471d98baa7bcdd645e8f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=jIeXEySFHlkzYksx17X44CeJRXnBbenlcifjArawcus",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:
+JSON.stringify(emailData)
+
+});
+
+
+if(response.ok){
+
+alert("Email sent successfully");
+
+}
+else{
+
+alert("Power Automate error: "+response.status);
+
+}
+
+
+}
+catch(error){
+
+alert("Connection error: "+error);
+
+}
+
+
 }
 </script>
 </body>
