@@ -497,7 +497,9 @@ const response = await fetch(
 "https://default27374b0e1a3c4f60be51de13a13a53.10.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/0ee38d11bf0b471d98baa7bcdd645e8f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=jIeXEySFHlkzYksx17X44CeJRXnBbenlcifjArawcus",
 {
 
-method:"POST",
+    method:"POST",
+
+    mode:"no-cors",
 
 headers:{
 "Content-Type":"application/json"
